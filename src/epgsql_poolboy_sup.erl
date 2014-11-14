@@ -21,7 +21,7 @@ start_pool(Name, SizeArgs, WorkerArgs) when is_atom(Name) ->
 stop_pool(atom()) ->
     ok.
 stop_pool(Name) ->
-    riakc_pool_sup:stop_child(Name).
+    epgsql_pool_sup:stop_child(Name).
 
 init([]) ->
     {ok, {{simple_one_for_one, 1, 1},
