@@ -33,13 +33,6 @@ init(Args) ->
     {ok, Pid} = connect(Host, Username, Password, ConnOpts),
     {ok, #state{conn=Pid}}.
 
-
-handle_call({F, A1, A2, A3, A4, A5, A6}, _From, State=#state{conn=Conn}) ->
-    Reply = pgsql:F(Conn, A1, A2, A3, A4, A5, A6),
-    handle_call_reply(Reply, State);
-handle_call({F, A1, A2, A3, A4, A5}, _From, State=#state{conn=Conn}) ->
-    Reply = pgsql:F(Conn, A1, A2, A3, A4, A5),
-    handle_call_reply(Reply, State);
 handle_call({F, A1, A2, A3, A4}, _From, State=#state{conn=Conn}) ->
     Reply = pgsql:F(Conn, A1, A2, A3, A4),
     handle_call_reply(Reply, State);
