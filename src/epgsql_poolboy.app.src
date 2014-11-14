@@ -1,0 +1,12 @@
+{application, epgsql_poolboy,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { epgsql_poolboy_app, []}},
+  {env, []}
+ ]}.
