@@ -1,9 +1,19 @@
 -module(epgsql_poolboy).
 
-
+-export([bind/3]).
+-export([bind/4]).
 -export([equery/2]).
--export([stop_pool/1]).
+-export([equery/3]).
+-export([execute/2]).
+-export([execute/3]).
+-export([execute/4]).
+-export([parse/2]).
+-export([parse/3]).
+-export([parse/4]).
 -export([start_pool/3]).
+-export([stop_pool/1]).
+-export([sync/1]).
+-export([with_transaction/2]).
 
 -include("defaults.hrl").
 
@@ -21,11 +31,44 @@ stop_pool(Name) ->
     epgsql_poolboy_sup:stop_pool(Name).
 
 equery(PoolName, Sql) ->
-    exec(PoolName, {equery, Sql}).
+    equery(PoolName, Sql, []).
+
+equery(PoolName, Sql, []) ->
+    exec(PoolName, {equery, Sql, []}).
+
+parse(PoolName, Sql) ->
+    parse(PoolName, "", Sql, []).
+
+parse(PoolName, Sql, Types) ->
+    parse(PoolName, "", Sql, Types).
+
+parse(PoolName, Name, Sql, Types) ->
+    exec(PoolName, {parse, PoolName, Name, Sql, Types}).
+
+bind(PoolName, Statement, Parameters) ->
+    bind(PoolName, Statement, "", Parameters).
+
+bind(PoolName, Statement, PortalName, Parameters) ->
+    exec(PoolName, {bind, Statement, PortalName, Parameters}).
+
+execute(PoolName, S) ->
+    execute(PoolName, S, "", 0).
+
+execute(PoolName, S, N) ->
+    execute(PoolName, S, "", N).
+
+execute(PoolName, S, PortalName, N) ->
+    exec(PoolName, {execute, S, PortalName, N}).
+
+sync(PoolName) ->
+    exec(PoolName, sync).
+
+with_transaction(PoolName, F) ->
+    exec(PoolName, {with_transaction, F}).
 
 exec(PoolName, Args) ->
-   PoolNameBin = atom_to_binary(PoolName, latin1),
-   Name = list_to_binary([<<"epgsql_poolboy.">>, PoolNameBin]),
+    PoolNameBin = atom_to_binary(PoolName, latin1),
+    Name = list_to_binary([<<"epgsql_poolboy.">>, PoolNameBin]),
     %%TODO: Steal puzza's fancy pants metric on the arguments: stat(Args)])
     Fun = fun(Worker) ->
                   Metric = folsom_metrics:histogram_timed_begin(Name),
