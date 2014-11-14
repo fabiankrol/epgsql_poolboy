@@ -17,7 +17,7 @@ WorkerArgs = [{hostname, "127.0.0.1"},
 PoolName = badger_pool,
 epgsql_poolboy:start_pool(PoolName, SizeArgs, WorkerArgs),
 
-{ok, Obj} = epgsql_poolboy:equery(PoolName, "SELECT * FROM some_database")
+{ok, [ColSpecs, Rows]} = epgsql_poolboy:equery(PoolName, "SELECT * FROM some_database")
 
 epgsql_poolboy:stop_pool(PoolName).
 ```
