@@ -18,16 +18,19 @@
 start_link(Args) ->
     gen_server:start_link(?MODULE, Args, []).
 
-connect(Host, undefined, Opts) ->
+connect(Host, undefined, undefined, Opts) ->
     pgsql:connect(Host, Opts);
-connect(Host, Password, Opts) ->
-    pgsql:connect(Host, Password, Opts).
+connect(Host, Username, undefined, Opts) ->
+    pgsql:connect(Host, Username, Opts);
+connect(Host, Username, Password, Opts) ->
+    pgsql:connect(Host, Username, Password, Opts).
 
 init(Args) ->
     Host = proplists:get_value(host, Args, "localhost"),
+    Username = proplists:get_value(username, Args),
     Password = proplists:get_value(password, Args),
     ConnOpts = proplists:get_value(opts, Args, []),
-    {ok, Pid} = connect(Host, Password, ConnOpts),
+    {ok, Pid} = connect(Host, Username, Password, ConnOpts),
     {ok, #state{conn=Pid}}.
 
 
