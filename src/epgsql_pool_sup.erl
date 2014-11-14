@@ -16,6 +16,7 @@ stop_child(Name) ->
     Pid = whereis(SupName),
     ok = supervisor:terminate_child(epgsql_poolboy_sup, Pid).
 
+
 init([Name, SizeArgs, WorkerArgs]) ->
     RestartStrategy = rest_for_one,
     MaxRestarts = 1000,

@@ -24,6 +24,14 @@ stop_pool(atom()) ->
 stop_pool(Name) ->
     epgsql_pool_sup:stop_child(Name).
 
+-spec
+stop_pools() ->
+    ok.
+stop_pools() ->
+    [ok = supervisor:terminate_child(epgsql_poolboy_sup, Pid)
+     || {_, Pid, _, _} <- supervisor:which_children(?MODULE)],
+    ok.
+
 init([]) ->
     {ok, {{simple_one_for_one, 1, 1},
           [{undefined,
