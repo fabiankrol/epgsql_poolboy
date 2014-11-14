@@ -2,11 +2,12 @@
 
 -behaviour(supervisor).
 
--export([start_link/0,
-         start_pool/3,
-         stop_pool/1]).
-
+-export([start_link/0]).
+-export([start_pool/3]).
+-export([stop_pool/1]).
+-export([stop_pools/0]).
 -export([init/1]).
+
 
 start_link() ->
     supervisor:start_link({local, ?MODULE}, ?MODULE, []).
