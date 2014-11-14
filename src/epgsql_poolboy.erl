@@ -10,6 +10,7 @@
 -export([parse/2]).
 -export([parse/3]).
 -export([parse/4]).
+-export([squery/2]).
 -export([start_pool/3]).
 -export([stop_pool/1]).
 -export([sync/1]).
@@ -35,6 +36,9 @@ equery(PoolName, Sql) ->
 
 equery(PoolName, Sql, []) ->
     exec(PoolName, {equery, Sql, []}).
+
+squery(PoolName, Sql) ->
+    exec(PoolName, {squery, Sql}).
 
 parse(PoolName, Sql) ->
     parse(PoolName, "", Sql, []).
