@@ -72,20 +72,20 @@ with_transaction(PoolName, F) ->
 
 exec(PoolName, Args) ->
     PoolNameBin = atom_to_binary(PoolName, latin1),
-    Name = list_to_binary([<<"epgsql_poolboy.">>, PoolNameBin]),
-    %%TODO: Steal puzza's fancy pants metric on the arguments: stat(Args)])
+    Name = list_to_binary([<<"epgsql_poolboy.">>, PoolNameBin, stat(Args)]),
     Fun = fun(Worker) ->
                   Metric = folsom_metrics:histogram_timed_begin(Name),
                   Res = gen_server:call(Worker, Args),
-                  ok = histogram_timed_notify(Metric),
+                  ok = epgsql_metrics:histogram_timed_notify(Metric),
                   Res
           end,
     poolboy:transaction(PoolName, Fun).
 
-histogram_timed_notify({Name, _} = Metric) ->
-     try
-         ok = folsom_metrics:histogram_timed_notify(Metric)
-     catch _:_ ->
-             folsom_metrics:new_histogram(Name),
-             folsom_metrics:safely_histogram_timed_notify(Metric)
-     end.
+stat({F, _}) when is_atom(F) ->
+    append_stat(F);
+stat(F) when is_atom(F) ->
+    append_stat(F).
+
+append_stat(F) when is_atom(F) ->
+    BinFuncName = atom_to_binary(F, latin1),
+    <<".", BinFuncName/binary>>.
