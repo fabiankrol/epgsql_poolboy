@@ -62,7 +62,8 @@ handle_call(F, _From, State = #state{conn=undefined}) ->
         {ok, Conn} ->
             Resp = mapply(F, Conn),
             handle_call_reply(Resp, State#state{conn=Conn});
-        {error, _} ->
+        {error, R} ->
+            error_logger:error_msg("Error calling postgresql: ~p", [R]),
             {noreply, State, ?TIMEOUT}
     end;
 handle_call(F, _From, State=#state{conn=Conn}) ->
