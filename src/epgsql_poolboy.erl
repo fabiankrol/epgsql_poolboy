@@ -35,10 +35,10 @@ equery(PoolName, Sql) ->
     equery(PoolName, Sql, []).
 
 equery(PoolName, Sql, []) ->
-    exec(PoolName, {equery, Sql, []}).
+    exec(PoolName, {equery, [Sql, []]}).
 
 squery(PoolName, Sql) ->
-    exec(PoolName, {squery, Sql}).
+    exec(PoolName, {squery, [Sql]}).
 
 parse(PoolName, Sql) ->
     parse(PoolName, "", Sql, []).
@@ -47,13 +47,13 @@ parse(PoolName, Sql, Types) ->
     parse(PoolName, "", Sql, Types).
 
 parse(PoolName, Name, Sql, Types) ->
-    exec(PoolName, {parse, PoolName, Name, Sql, Types}).
+    exec(PoolName, {parse, [PoolName, Name, Sql, Types]}).
 
 bind(PoolName, Statement, Parameters) ->
     bind(PoolName, Statement, "", Parameters).
 
 bind(PoolName, Statement, PortalName, Parameters) ->
-    exec(PoolName, {bind, Statement, PortalName, Parameters}).
+    exec(PoolName, {bind, [Statement, PortalName, Parameters]}).
 
 execute(PoolName, S) ->
     execute(PoolName, S, "", 0).
@@ -62,7 +62,7 @@ execute(PoolName, S, N) ->
     execute(PoolName, S, "", N).
 
 execute(PoolName, S, PortalName, N) ->
-    exec(PoolName, {execute, S, PortalName, N}).
+    exec(PoolName, {execute, [S, PortalName, N]}).
 
 sync(PoolName) ->
     exec(PoolName, sync).
