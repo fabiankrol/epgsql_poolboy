@@ -78,14 +78,16 @@ terminate(_Reason, #state{conn=Conn}) ->
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
-handle_info(_, State = #state{conn=undefined, host=Host}) ->
+handle_info(timeout, State = #state{conn=undefined, host=Host}) ->
     case try_connect(State) of
         {ok, Pid} ->
             {noreply, State#state{conn=Pid}};
         {error, _} ->
             error_logger:info_msg("Postgres connection reconnecting: ~s", [Host]),
             {noreply, State, ?TIMEOUT}
-    end.
+    end;
+handle_info(_, State) ->
+    {noreply, State}.
 
 %% Internal
 
