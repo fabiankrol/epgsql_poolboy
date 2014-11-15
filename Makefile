@@ -20,5 +20,7 @@ test:
 dialyzer: compile
 	@dialyzer -Wno_undefined_callbacks \
         -r ebin \
+		-r deps/bear \
+		-r deps/epgsql \
         -r deps/folsom \
         -r deps/poolboy
