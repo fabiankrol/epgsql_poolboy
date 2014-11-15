@@ -38,7 +38,7 @@ transaction(_Config) ->
         fun(C) ->
                 {ok, _, Rows} = pgsql:equery(C, "SELECT * FROM test_database"),
                 Next = lists:max([N || {N} <- Rows]) + 1,
-                {ok,    1} = pgsql:equery(C, "INSERT INTO test_database VALUES($1)", [Next])
+                {ok, 1} = pgsql:equery(C, "INSERT INTO test_database VALUES($1)", [Next])
         end,
 
     epgsql_poolboy:with_transaction(PoolName, InTransaction).
