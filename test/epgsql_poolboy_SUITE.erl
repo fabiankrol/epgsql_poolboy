@@ -6,7 +6,7 @@
 -include_lib("common_test/include/ct.hrl").
 
 all() ->
-    [simple_connect, transaction].
+    [simple_connect, transaction, fail_connect].
 
 init_per_suite(Config) ->
     {ok, _} = application:ensure_all_started(epgsql_poolboy),
@@ -19,7 +19,7 @@ create_pool(PoolName) ->
     SizeArgs = [{size, 10},
                 {max_overflow, 20}],
 
-    WorkerArgs = [{hostname, "localhost"},
+    WorkerArgs = [{host, "localhost"},
                   {opts, [{database, "epgsql_test_database"}]}],
 
     epgsql_poolboy:start_pool(PoolName, SizeArgs, WorkerArgs).
@@ -33,7 +33,7 @@ simple_connect(_Config) ->
 
 transaction(_Config) ->
     PoolName = postgres_pool,
-    {ok, _} = create_pool(PoolName),
+    {ok, Pid} = create_pool(PoolName),
     InTransaction =
         fun(C) ->
                 {ok, _, Rows} = pgsql:equery(C, "SELECT * FROM test_database"),
@@ -41,4 +41,24 @@ transaction(_Config) ->
                 {ok, 1} = pgsql:equery(C, "INSERT INTO test_database VALUES($1)", [Next])
         end,
 
-    epgsql_poolboy:with_transaction(PoolName, InTransaction).
+    epgsql_poolboy:with_transaction(PoolName, InTransaction),
+    ok = epgsql_poolboy:stop_pool(PoolName),
+    false = is_process_alive(Pid).
+
+fail_connect(_Config) ->
+    PoolName = postgres_pool,
+    SizeArgs = [{size, 10},
+                {max_overflow, 20}],
+
+    WorkerArgs = [{host, "localhost"},
+                  {opts, [{database, "epgsql_test_database"},
+                          {port, 1}]}],
+
+    {ok, _} = epgsql_poolboy:start_pool(PoolName, SizeArgs, WorkerArgs),
+    try
+        epgsql_poolboy:with_transaction(PoolName, fun(_) -> ok end),
+        ct:fail("Call allowed when should not have been") 
+    catch
+        exit:{timeout, _} ->
+            ok
+    end.
