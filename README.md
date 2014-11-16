@@ -11,9 +11,9 @@ Usage
 ```erlang
 SizeArgs = [{size, 10},
             {max_overflow, 20}],
-WorkerArgs = [{hostname, "127.0.0.1"},
-              {port, 8087},
-              {opts, [{database, "some_database"}]}],
+WorkerArgs = [{host, "127.0.0.1"},
+              {opts, [{database, "some_database"}
+                      {port, 8087}]}],
 PoolName = badger_pool,
 epgsql_poolboy:start_pool(PoolName, SizeArgs, WorkerArgs),
 
