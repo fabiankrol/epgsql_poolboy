@@ -10,6 +10,7 @@
 -export([terminate/2]).
 
 -define(TIMEOUT, 30000).
+-define(CONNECTION_ERROR_NOTIFY, <<"epgsql_poolboy.connection_error">>).
 
 -behaviour(poolboy_worker).
 -behaviour(gen_server).
@@ -37,6 +38,7 @@ try_connect(#state{conn=undefined, host=Host, username=Username,
         connect(Host, Username, Password, Opts)
     catch
         error:{{badmatch, econnrefused = Reason}, _} ->
+            ok = notify_connection_error(),
            {error, Reason}
     end.
 
@@ -99,3 +101,6 @@ mapply({F, Args}, Conn) ->
 
 handle_call_reply(Reply, State) ->
     {reply, Reply, State}.
+
+notify_connection_error() ->
+    ok = epgsql_metrics:notify_histogram(?CONNECTION_ERROR_NOTIFY).
