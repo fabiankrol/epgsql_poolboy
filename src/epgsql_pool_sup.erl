@@ -24,8 +24,9 @@ init([Name, SizeArgs, WorkerArgs]) ->
     SupFlags = {RestartStrategy, MaxRestarts, MaxSecondsBetweenRestarts},
 
     PoolSpec = pool_spec(Name, SizeArgs, WorkerArgs),
+    StatusSpec = status_spec(Name),
 
-    {ok, {SupFlags, [PoolSpec]}}.
+    {ok, {SupFlags, [PoolSpec, StatusSpec]}}.
 
 name(PoolName) when is_atom(PoolName) ->
     NameList = atom_to_list(PoolName),
@@ -36,3 +37,7 @@ pool_spec(Name, SizeArgs, WorkerArgs) ->
         [{name, {local, Name}},
          {worker_module, epgsql_poolboy_worker}] ++ SizeArgs,
     poolboy:child_spec(Name, PoolArgs, WorkerArgs).
+
+status_spec(Name) ->
+    {epgsql_pool_status, {epgsql_pool_status, start_link, [Name]},
+     transient, 5000, worker, [epgsql_pool_status]}.
