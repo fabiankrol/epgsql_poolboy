@@ -39,7 +39,7 @@ try_connect(#state{conn=undefined, host=Host, username=Username,
     catch
         error:{{badmatch, econnrefused = Reason}, _} ->
             ok = notify_connection_error(),
-           {error, Reason}
+            {error, Reason}
     end.
 
 init(Args) ->
