@@ -55,10 +55,4 @@ fail_connect(_Config) ->
                           {port, 1}]}],
 
     {ok, _} = epgsql_poolboy:start_pool(PoolName, SizeArgs, WorkerArgs),
-    try
-        epgsql_poolboy:with_transaction(PoolName, fun(_) -> ok end),
-        ct:fail("Call allowed when should not have been") 
-    catch
-        exit:{timeout, _} ->
-            ok
-    end.
+    {error, not_connected} = epgsql_poolboy:with_transaction(PoolName, fun(_) -> ok end).
