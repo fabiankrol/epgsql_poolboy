@@ -18,8 +18,7 @@
 -define(STAT_NAMES, [{new_gauge, "workers"},
                      {new_gauge, "overflow"},
                      {new_gauge, "monitors"},
-                     {new_histogram, "stats_timeout"}
-                    ]).
+                     {new_histogram, "stats_timeout"}]).
 
 start_link(Name) when is_atom(Name) ->
     gen_server:start_link(?MODULE, [Name], []).
