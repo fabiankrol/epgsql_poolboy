@@ -53,8 +53,12 @@ init(Args) ->
     case try_connect(BaseState) of
         {ok, Pid} ->
             {ok, BaseState#state{conn=Pid}};
-        {error, R} ->
-            error_logger:error_msg("Error connecting to postgresql: ~p", [R]),
+        {error, econnrefused} ->
+            error_logger:error_msg("Connection to pgsql failed: ~p", [Host]),
+            erlang:send_after(?TIMEOUT, self(), reconnect),
+            {ok, BaseState};
+        {error, Reason} ->
+            error_logger:error_msg("Unhandled error connecting to pgsql: ~p, Host: ~p", [Reason, Host]),
             erlang:send_after(?TIMEOUT, self(), reconnect),
             {ok, BaseState}
     end.
