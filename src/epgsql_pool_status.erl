@@ -60,7 +60,7 @@ terminate(_Reason, #state{name=Name, timer=Tref}) ->
     [begin
          GaugeName = metric_name(Name, StatName),
          folsom_metrics:delete_metric(GaugeName)
-     end || StatName <- ?STAT_NAMES],
+     end || {_, StatName} <- ?STAT_NAMES],
     {ok, cancel} = timer:cancel(Tref),
     ok.
 
