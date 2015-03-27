@@ -20,7 +20,7 @@
 
 
 -spec
-start_pool(atom(), list(term()), list(term())) -> 
+start_pool(atom(), list(term()), list(term())) ->
     supervisor:startlink_ret().
 start_pool(Name, SizeArgs, WorkerArgs) ->
     epgsql_poolboy_sup:start_pool(Name, SizeArgs, WorkerArgs).
@@ -72,11 +72,14 @@ with_transaction(PoolName, F) ->
 
 exec(PoolName, Args) ->
     PoolNameBin = atom_to_binary(PoolName, latin1),
-    Name = list_to_binary([<<"epgsql_poolboy.">>, PoolNameBin, stat(Args)]),
+    BaseMetricName = [<<"epgsql_poolboy.">>, PoolNameBin, stat(Args)],
+    NameTimer = list_to_binary(BaseMetricName),
+    NameSpiral = list_to_binary([<<"epgsql_poolboy.">>, PoolNameBin, stat(Args), ".counter"]),
     Fun = fun(Worker) ->
-                  Metric = folsom_metrics:histogram_timed_begin(Name),
+                  Metric = quintana:begin_timed(NameTimer),
                   Res = gen_server:call(Worker, Args),
-                  ok = epgsql_metrics:histogram_timed_notify(Metric),
+                  ok = quintana:notify_timed(Metric),
+                  ok = quintana:notify_spiral({NameSpiral, 1}),
                   Res
           end,
     poolboy:transaction(PoolName, Fun).

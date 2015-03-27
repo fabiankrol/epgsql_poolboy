@@ -6,13 +6,19 @@ all: deps compile
 compile:
 	rebar compile
 
+compile-fast:
+	rebar compile skip_deps=true
+
+console:
+	erl -pa deps/*/ebin/ -pa ebin/ -sname epgsql_poolboy
+
 deps:
 	rebar get-deps
 
 clean:
 	rebar clean
 
-distclean: clean 
+distclean: clean
 	rebar delete-deps
 
 databases: $(TEST_DATABASE)

@@ -1,0 +1,9 @@
+language: erlang
+otp_release:
+  - R16B02
+  - R16B01
+  - R16B
+services: postgres
+script: make compile test
+after_failure:
+  - cat logs/raw.log
