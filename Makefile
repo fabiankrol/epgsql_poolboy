@@ -20,7 +20,7 @@ distclean: clean
 
 databases: $(TEST_DATABASE)
 $(TEST_DATABASE):
-	@if [ `psql -l | grep $@ | wc -l` -gt 0 ]; then \
+	@if [ `psql -l | grep $@ | wc -l` -eq 0 ]; then \
 		createdb $@; \
 	fi
 
