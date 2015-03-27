@@ -108,4 +108,4 @@ handle_call_reply(Reply, State) ->
     {reply, Reply, State}.
 
 notify_connection_error() ->
-    ok = epgsql_metrics:notify_histogram(?CONNECTION_ERROR_NOTIFY).
+    ok = quintana:notify_histogram(?CONNECTION_ERROR_NOTIFY).
