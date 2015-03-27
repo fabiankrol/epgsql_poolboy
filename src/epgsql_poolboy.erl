@@ -72,7 +72,7 @@ with_transaction(PoolName, F) ->
 
 exec(PoolName, Args) ->
     PoolNameBin = atom_to_binary(PoolName, latin1),
-    BaseMetricName = [<<"epgsql_poolboy.">>, PoolNameBin, stat(Args)]
+    BaseMetricName = [<<"epgsql_poolboy.">>, PoolNameBin, stat(Args)],
     NameTimer = list_to_binary(BaseMetricName),
     NameSpiral = list_to_binary([<<"epgsql_poolboy.">>, PoolNameBin, stat(Args), ".counter"]),
     Fun = fun(Worker) ->
