@@ -5,3 +5,5 @@ otp_release:
   - R16B
 services: postgres
 script: make compile test
+after_failure:
+  - cat logs/raw.log
