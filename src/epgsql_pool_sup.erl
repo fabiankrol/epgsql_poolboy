@@ -7,6 +7,7 @@
 
 -export([init/1]).
 
+
 start_link(Name, SizeArgs, WorkerArgs) when is_atom(Name) ->
     SupName = name(Name),
     supervisor:start_link({local, SupName}, ?MODULE, [Name, SizeArgs, WorkerArgs]).
@@ -15,7 +16,6 @@ stop_child(Name) ->
     SupName = name(Name),
     Pid = whereis(SupName),
     ok = supervisor:terminate_child(epgsql_poolboy_sup, Pid).
-
 
 init([Name, SizeArgs, WorkerArgs]) ->
     RestartStrategy = one_for_one,
