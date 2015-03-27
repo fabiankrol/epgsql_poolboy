@@ -8,8 +8,19 @@
 all() ->
     [simple_connect, transaction, fail_connect].
 
+ensure_all_started(App) ->
+    case application:start(App) of
+        ok ->
+            ok;
+        {error, {already_started, _}} ->
+            ok;
+        {error, {not_started, Dep}} ->
+            ok = ensure_all_started(Dep),
+            ensure_all_started(App)
+    end.
+
 init_per_suite(Config) ->
-    {ok, _} = application:ensure_all_started(epgsql_poolboy),
+    ok = ensure_all_started(epgsql_poolboy),
     Config.
 
 end_per_suite(_Config) ->
