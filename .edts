@@ -1,0 +1,3 @@
+:name "epgsq_poolboy"
+:lib-dirs '("deps")
+:start-command "make console"

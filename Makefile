@@ -6,6 +6,9 @@ all: deps compile
 compile:
 	rebar compile
 
+console:
+	erl -pa deps/*/ebin/ -pa ebin/ -sname epgsql_poolboy
+
 deps:
 	rebar get-deps
 
