@@ -1,13 +1,14 @@
 {application, epgsql_poolboy,
  [
   {description, "pgsql pooling library"},
-  {vsn, "0.1.2"},
+  {vsn, "0.1.3"},
   {registered, []},
   {applications, [
                   kernel,
                   stdlib,
                   folsom,
-                  epgsql
+                  epgsql,
+                  poolboy
                  ]},
   {mod, { epgsql_poolboy_app, []}},
   {env, []}
