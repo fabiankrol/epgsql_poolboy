@@ -31,45 +31,47 @@ stop_pool(atom()) ->
 stop_pool(Name) ->
     epgsql_poolboy_sup:stop_pool(Name).
 
-equery(PoolName, Sql) ->
-    equery(PoolName, Sql, []).
+equery(PoolNameOrAtom, Sql) ->
+    equery(PoolNameOrAtom, Sql, []).
 
-equery(PoolName, Sql, Args) ->
-    exec(PoolName, {equery, [Sql, Args]}).
+equery(PoolNameOrAtom, Sql, []) ->
+    exec(PoolNameOrAtom, {equery, [Sql, []]}).
 
-squery(PoolName, Sql) ->
-    exec(PoolName, {squery, [Sql]}).
+squery(PoolNameOrAtom, Sql) ->
+    exec(PoolNameOrAtom, {squery, [Sql]}).
 
-parse(PoolName, Sql) ->
-    parse(PoolName, "", Sql, []).
+parse(PoolNameOrAtom, Sql) ->
+    parse(PoolNameOrAtom, "", Sql, []).
 
-parse(PoolName, Sql, Types) ->
-    parse(PoolName, "", Sql, Types).
+parse(PoolNameOrAtom, Sql, Types) ->
+    parse(PoolNameOrAtom, "", Sql, Types).
 
-parse(PoolName, Name, Sql, Types) ->
-    exec(PoolName, {parse, [PoolName, Name, Sql, Types]}).
+parse(PoolNameOrAtom, Name, Sql, Types) ->
+    exec(PoolNameOrAtom, {parse, [PoolNameOrAtom, Name, Sql, Types]}).
 
-bind(PoolName, Statement, Parameters) ->
-    bind(PoolName, Statement, "", Parameters).
+bind(PoolNameOrAtom, Statement, Parameters) ->
+    bind(PoolNameOrAtom, Statement, "", Parameters).
 
-bind(PoolName, Statement, PortalName, Parameters) ->
-    exec(PoolName, {bind, [Statement, PortalName, Parameters]}).
+bind(PoolNameOrAtom, Statement, PortalName, Parameters) ->
+    exec(PoolNameOrAtom, {bind, [Statement, PortalName, Parameters]}).
 
-execute(PoolName, S) ->
-    execute(PoolName, S, "", 0).
+execute(PoolNameOrAtom, S) ->
+    execute(PoolNameOrAtom, S, "", 0).
 
-execute(PoolName, S, N) ->
-    execute(PoolName, S, "", N).
+execute(PoolNameOrAtom, S, N) ->
+    execute(PoolNameOrAtom, S, "", N).
 
-execute(PoolName, S, PortalName, N) ->
-    exec(PoolName, {execute, [S, PortalName, N]}).
+execute(PoolNameOrAtom, S, PortalName, N) ->
+    exec(PoolNameOrAtom, {execute, [S, PortalName, N]}).
 
-sync(PoolName) ->
-    exec(PoolName, sync).
+sync(PoolNameOrAtom) ->
+    exec(PoolNameOrAtom, sync).
 
-with_transaction(PoolName, F) ->
-    exec(PoolName, {with_transaction, [F]}).
+with_transaction(PoolNameOrAtom, F) ->
+    exec(PoolNameOrAtom, {with_transaction, [F]}).
 
+exec(Worker, Args) when is_pid(Worker) ->
+    gen_server:call(Worker, Args);
 exec(PoolName, Args) ->
     PoolNameBin = atom_to_binary(PoolName, latin1),
     BaseMetricName = [<<"epgsql_poolboy.">>, PoolNameBin, stat(Args)],
