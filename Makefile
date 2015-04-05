@@ -1,25 +1,28 @@
 TEST_DATABASE = epgsql_test_database
+REBAR = ./rebar
+
+
 .PHONY: deps test doc
 
 all: deps compile
 
 compile:
-	rebar compile
+	$(REBAR) compile
 
 compile-fast:
-	rebar compile skip_deps=true
+	$(REBAR) compile skip_deps=true
 
 console:
 	erl -pa deps/*/ebin/ -pa ebin/ -sname epgsql_poolboy
 
 deps:
-	rebar get-deps
+	$(REBAR) get-deps
 
 clean:
-	rebar clean
+	$(REBAR) clean
 
 distclean: clean
-	rebar delete-deps
+	$(REBAR) delete-deps
 
 databases: $(TEST_DATABASE)
 $(TEST_DATABASE):
@@ -31,7 +34,7 @@ postgres-init: databases
 	@psql -d $(TEST_DATABASE) < priv/test_schema.sql
 
 test: postgres-init
-	rebar skip_deps=true ct
+	$(REBAR) skip_deps=true ct
 
 dialyzer: compile
 	@dialyzer -Wno_undefined_callbacks \

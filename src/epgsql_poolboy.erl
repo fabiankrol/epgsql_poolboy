@@ -34,8 +34,8 @@ stop_pool(Name) ->
 equery(PoolNameOrAtom, Sql) ->
     equery(PoolNameOrAtom, Sql, []).
 
-equery(PoolNameOrAtom, Sql, []) ->
-    exec(PoolNameOrAtom, {equery, [Sql, []]}).
+equery(PoolNameOrAtom, Sql, Args) ->
+    exec(PoolNameOrAtom, {equery, [Sql, Args]}).
 
 squery(PoolNameOrAtom, Sql) ->
     exec(PoolNameOrAtom, {squery, [Sql]}).
